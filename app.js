@@ -14,6 +14,7 @@ const morgan = require('morgan');
 const keys = require('./keys');
 const shopRoutes = require('./routes/shop');
 const userRoutes = require('./routes/user');
+const authRoutes = require('./routes/auth');
 const errorRoutes = require('./routes/error');
 
 const app = express();
@@ -40,8 +41,9 @@ app.use('/images', express.static(path.join(__dirname, 'images')));
 // }));
 // app.use(csrfProtection);
 
-app.use(userRoutes);
+// app.use(userRoutes);
 app.use(shopRoutes);
+app.use(authRoutes);
 // app.use(errorRoutes);
 
 app.use((error, req, res, next) => {
