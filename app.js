@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs');
 
 const express = require('express');
 const bodyParser = require('body-parser');
@@ -6,6 +7,9 @@ const mongoose = require('mongoose');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
+const helmet = require('helmet');
+const compression = require('compression');
+const morgan = require('morgan');
 
 const keys = require('./keys');
 const shopRoutes = require('./routes/shop');
@@ -23,6 +27,8 @@ const csrfProtection = csrf();
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
+app.use(helmet());
+app.use(compression());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/images', express.static(path.join(__dirname, 'images')));
@@ -37,6 +43,15 @@ app.use('/images', express.static(path.join(__dirname, 'images')));
 app.use(userRoutes);
 app.use(shopRoutes);
 // app.use(errorRoutes);
+
+app.use((error, req, res, next) => {
+    console.log(error);
+    error.statusCode = error.statusCode || 500;
+    res.status(error.statusCode).render('error/index', {
+        pageTitle: error.statusCode.toString(),
+        path: '/' + error.statusCode
+    });
+});
 
 const MONGODB_CONNECT_OPTIONS = {
     useNewUrlParser: true,

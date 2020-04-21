@@ -4,21 +4,27 @@
 <body>
     <%- include('../includes/navigation-old.ejs') %>
     <main>
+        <% if(totalProducts > 0) { %>
         <div class="grid">
+            <% products.forEach(product => { %>
             <article class="card product-item">
                 <header class="card__header">
-                    <h1 class="product__title">asdfsdf</h1>
+                    <h1 class="product__title"><%= product.title %></h1>
                 </header>
                 <div class="card__image">
-                    <img src="/images/book.jpg" alt="book.jpg">
+                    <img src="<%= product.imageUrl %>" alt="<%= product.title %>">
                 </div>
                 <div class="card__content">
-                    <h2 class="product__price">20.99</h2>
-                    <p class="product__description">lkasnvaljajsvklasjvklasj</p>
+                    <h2 class="product__price">$<%= product.price %></h2>
+                    <p class="product__description"><%= product.description %></p>
                 </div>
                 <div class="card__actions">
-                    <a href="" class="btn">Details</a>
+                    <a href="/product/<%= product._id %>" class="btn">Details</a>
                 </div>
             </article>
+            <% }) %>
         </div>
+        <% } else { %>
+        <h1>No products found</h1>
+        <% } %>
     </main>
