@@ -21,9 +21,9 @@ const app = express();
 const csrfProtection = csrf();
 
 app.set('view engine', 'ejs');
-app.set('view', 'views');
+app.set('views', 'views');
 
-app.use(bodyParser({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/images', express.static(path.join(__dirname, 'images')));
 // app.use(session({
@@ -36,7 +36,14 @@ app.use('/images', express.static(path.join(__dirname, 'images')));
 
 app.use(userRoutes);
 app.use(shopRoutes);
-app.use(errorRoutes);
+// app.use(errorRoutes);
+
+const MONGODB_CONNECT_OPTIONS = {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useFindAndModify: false,
+    useCreateIndex: false
+};
 
 mongoose.connect(keys.MONGODB_ATLAS_URI, MONGODB_CONNECT_OPTIONS)
     .then((result) => {

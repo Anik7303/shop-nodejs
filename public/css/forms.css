@@ -27,3 +27,12 @@
   border-color: red;
   background-color: rgb(250, 237, 237);
 }
+
+.login-form,
+.signup-form,
+.reset-form {
+  width: 20rem;
+  max-width: 90%;
+  margin: auto;
+  display: block;
+}
