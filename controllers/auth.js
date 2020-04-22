@@ -121,9 +121,21 @@ module.exports.postLogin = async (req, res, next) => {
                 errors: authErrors
             });
         }
-        res.status(200).redirect('/');
+        req.session.user = user;
+        req.session.isLogged = true;
+        req.session.save(error => {
+            if(error) console.log(error);
+            res.status(200).redirect('/');
+        });
     } catch(error) {
         error.statusCode = 500;
         throw error;
     }
+};
+
+module.exports.postLogout = (req, res, next) => {
+    req.session.destroy(error => {
+        if(error) console.log(error);
+        res.redirect('/');
+    })
 };

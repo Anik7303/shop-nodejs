@@ -13,6 +13,7 @@ const helmet = require('helmet');
 const compression = require('compression');
 const morgan = require('morgan');
 
+const User = require('./models/user');
 const keys = require('./keys');
 const shopRoutes = require('./routes/shop');
 const userRoutes = require('./routes/user');
@@ -20,11 +21,11 @@ const authRoutes = require('./routes/auth');
 const errorRoutes = require('./routes/error');
 
 const app = express();
-// const store = new MongoDBStore({
-//     uri: keys.MONGODB_ATLAS_URI,
-//     databaseName: 'shop',
-//     collection: 'sessions'
-// });
+const store = new MongoDBStore({
+    uri: keys.MONGODB_ATLAS_URI,
+    databaseName: 'shop',
+    collection: 'sessions'
+});
 const csrfProtection = csrf();
 const fileStorage = multer.diskStorage({
     destination: (req, file, callback) => {
@@ -38,7 +39,6 @@ const fileStorage = multer.diskStorage({
         });
     }
 });
-
 const fileFilter = (req, file, callback) => {
     const allowedExtensions = ['image/jpg', 'image/jpeg', 'image/png'];
     if(allowedExtensions.includes(file.mimetype)) {
@@ -46,29 +46,52 @@ const fileFilter = (req, file, callback) => {
     } else {
         callback(null, false);
     }
-}
+};
+const accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a'});
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
 app.use(helmet());
 app.use(compression());
+app.use(morgan("combined", { stream: accessLogStream }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).single('image'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/images', express.static(path.join(__dirname, 'images')));
-// app.use(session({
-//     secret: keys.SESSION_SECRET_KEY,
-//     resave: false,
-//     saveUninitialized: false,
-//     store: store
-// }));
-// app.use(csrfProtection);
+app.use(session({
+    secret: keys.SESSION_SECRET_KEY,
+    resave: false,
+    saveUninitialized: false,
+    store: store
+}));
+app.use(csrfProtection);
+
+app.use((req, res, next) => {
+    res.locals.isAuthenticated = req.session.isLogged;
+    res.locals.csrfToken = req.csrfToken();
+    next();
+});
+
+app.use(async (req, res, next) => {
+    if(!req.session.user) return next();
+    try {
+        const user = await User.findById(req.session.user._id);
+        if(!user) {
+            return res.redirect('/login');
+        }
+        req.user = user;
+        next();
+    } catch(error) {
+        error.statusCode = 500;
+        throw error;
+    }
+});
 
 app.use(userRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
-// app.use(errorRoutes);
+app.use(errorRoutes);
 
 app.use((error, req, res, next) => {
     console.log(error);

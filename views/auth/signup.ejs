@@ -7,6 +7,7 @@
     <main>
         <%- include('../includes/message-error.ejs') %>
         <form class="signup-form" action="/signup" method="POST" novalidate>
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <div class="form-control">
                 <label for="name">Name</label>
                 <input
@@ -15,6 +16,7 @@
                     name="name"
                     id="name"
                     value="<%= oldInputs ? oldInputs.name : '' %>"
+                    autocomplete="off"
                     autofocus>
             </div>
             <div class="form-control">
@@ -24,7 +26,8 @@
                     type="email"
                     name="email"
                     id="email"
-                    value="<%= oldInputs ? oldInputs.email : '' %>">
+                    value="<%= oldInputs ? oldInputs.email : '' %>"
+                    autocomplete="off">
             </div>
             <div class="form-control">
                 <label for="password">Password</label>

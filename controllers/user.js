@@ -15,14 +15,14 @@ module.exports.getAddProduct = (req, res, next) => {
 
 module.exports.getDashboard = async (req, res, next) => {
     try {
-        const user = await User.findById('5ea02073cba74c17a8d2690b');
+        const user = await User.findById(req.user._id);
         if(!user) {
             const error = new Error('user not found');
             error.statusCode = 404;
             throw error;
         }
-        const totalProducts = await Product.find({ user: '5ea02073cba74c17a8d2690b' }).countDocuments();
-        const products = await Product.find({ user: '5ea02073cba74c17a8d2690b' });
+        const totalProducts = await Product.find({ user: user._id }).countDocuments();
+        const products = await Product.find({ user: user._id });
         if(totalProducts && totalProducts > 0) {
             res.status(200).render('user/dashboard', {
                 pageTitle: 'Dashboard',
@@ -86,14 +86,14 @@ module.exports.postAddProduct = async (req, res, next) => {
         });
     }
     try {
-        const user = await User.findById('5ea02073cba74c17a8d2690b');
+        // const user = await User.findById(req.user._id);
 
         const product = new Product({
             title: req.body.title,
             price: req.body.price,
             imageUrl: '/' + req.file.path.replace('\\', '/'),
             description: req.body.description,
-            user: user._id
+            user: req.user._id
         });
 
         const createdProduct = await product.save();

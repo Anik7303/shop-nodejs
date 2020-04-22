@@ -7,13 +7,29 @@
     <main>
         <%- include('../includes/message-error.ejs') %>
         <form action="/login" class="login-form" method="POST" novalidate>
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
             <div class="form-control">
                 <label for="email">Email</label>
-                <input class="<%= errors && errors.data && errors.data.find(item => item.param === 'email') ? 'invalid' : '' %>" type="email" name="email" id="email" value="<%= oldInputs ? oldInputs.email : '' %>" autofocus placeholder="email address">
+                <input
+                    class="<%= errors && errors.data && errors.data.find(item => item.param === 'email') ? 'invalid' : '' %>"
+                    type="email"
+                    name="email"
+                    id="email"
+                    value="<%= oldInputs ? oldInputs.email : '' %>"
+                    autofocus
+                    placeholder="email address"
+                    autocomplete="off">
             </div>
             <div class="form-control">
                 <label for="password">Password</label>
-                <input class="<%= errors && errors.data && errors.data.find(item => item.param === 'password') ? 'invalid' : '' %>" type="password" name="password" id="password" value="<%= oldInputs ? oldInputs.password : '' %>" placeholder="password (atleast 8 characters long)">
+                <input
+                    class="<%= errors && errors.data && errors.data.find(item => item.param === 'password') ? 'invalid' : '' %>"
+                    type="password"
+                    name="password"
+                    id="password"
+                    value="<%= oldInputs ? oldInputs.password : '' %>"
+                    placeholder="password (atleast 8 characters long)"
+                    autocomplete="off">
             </div>
             <button type="submit" class="btn">Login</button>
         </form>
