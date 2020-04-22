@@ -1,17 +1,11 @@
-    <%- include('../includes/head.ejs') %>
+    <%- include('../includes/head.ejs', {pageTitle: pageTitle }) %>
     <link rel="stylesheet" href="/css/product.css">
     <link rel="stylesheet" href="/css/message.css">
     </head>
 <body>
     <%- include('../includes/navigation-old.ejs') %>
     <main>
-        <% if(errors && errors.messages ) { %>
-            <div class="user-message user-message--error">
-                <% errors.messages.forEach(message => { %>
-                    <div><%= message %></div>
-                <% }) %>
-            </div>
-            <% } %>
+        <%- include('../includes/message-error.ejs') %>
         <% if(totalProducts > 0) { %>
         <div class="grid">
             <% products.forEach(product => { %>
@@ -28,6 +22,7 @@
                 </div>
                 <div class="card__actions">
                     <a href="/product/<%= product._id %>" class="btn">Details</a>
+                    <%- include('../includes/add-to-cart.ejs', { product: product }) %>
                 </div>
             </article>
             <% }) %>

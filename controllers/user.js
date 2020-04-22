@@ -4,7 +4,7 @@ const Product = require('../models/product');
 const User = require('../models/user');
 
 module.exports.getAddProduct = (req, res, next) => {
-    res.status(200).render('user/edit-product', {
+    res.status(200).render('product/edit-product', {
         pageTitle: 'Add Product',
         path: '/add-product',
         editing: false,
@@ -24,7 +24,7 @@ module.exports.getDashboard = async (req, res, next) => {
         const totalProducts = await Product.find({ user: '5ea02073cba74c17a8d2690b' }).countDocuments();
         const products = await Product.find({ user: '5ea02073cba74c17a8d2690b' });
         if(totalProducts && totalProducts > 0) {
-            res.status(200).render('user/product-list', {
+            res.status(200).render('user/dashboard', {
                 pageTitle: 'Dashboard',
                 path: '/dashboard',
                 products: products,
@@ -32,7 +32,7 @@ module.exports.getDashboard = async (req, res, next) => {
                 errors: null
             });
         } else {
-            res.status(200).render('user/product-list', {
+            res.status(200).render('user/dashboard', {
                 pageTitle: 'Dashboard',
                 path: '/dashboard',
                 products: [],
@@ -49,7 +49,7 @@ module.exports.getDashboard = async (req, res, next) => {
 module.exports.postAddProduct = async (req, res, next) => {
     const errors = validationResult(req);
     if(!errors.isEmpty()) {
-        return res.status(422).render('user/edit-product', {
+        return res.status(422).render('product/edit-product', {
             pageTitle: 'Add Product',
             path: '/add-product',
             editing: false,
@@ -68,7 +68,7 @@ module.exports.postAddProduct = async (req, res, next) => {
     }
 
     if(!req.file) {
-        return res.status(404).render('user/edit-product', {
+        return res.status(404).render('product/edit-product', {
             pageTitle: 'Add Product',
             path: '/add-product',
             editing: false,
@@ -91,14 +91,14 @@ module.exports.postAddProduct = async (req, res, next) => {
         const product = new Product({
             title: req.body.title,
             price: req.body.price,
-            imageUrl: req.file.path.replace('\\', '/'),
+            imageUrl: '/' + req.file.path.replace('\\', '/'),
             description: req.body.description,
             user: user._id
         });
 
         const createdProduct = await product.save();
         if(!createdProduct) {
-            return res.status(401).render('user/edit-product', {
+            return res.status(401).render('product/edit-product', {
                 pageTitle: 'Add Product',
                 path: '/add-product',
                 editing: false,

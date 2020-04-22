@@ -1,17 +1,11 @@
-    <%- include('../includes/head.ejs') %>
+    <%- include('../includes/head.ejs', {pageTitle: pageTitle }) %>
     <link rel="stylesheet" href="/css/forms.css">
     <link rel="stylesheet" href="/css/message.css">
     </head>
 <body>
     <%- include('../includes/navigation-old.ejs') %>
     <main>
-        <% if(errors && errors.messages.length > 0) { %>
-        <div class="user-message user-message--error">
-            <% errors.messages.forEach(error => { %>
-                <div><%= error %></div>
-            <% }) %>
-        </div>
-        <% } %>
+        <%- include('../includes/message-error.ejs') %>
         <form class="signup-form" action="/signup" method="POST" novalidate>
             <div class="form-control">
                 <label for="name">Name</label>
