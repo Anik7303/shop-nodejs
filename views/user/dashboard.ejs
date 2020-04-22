@@ -28,6 +28,11 @@
                     </div>
                     <div class="card__actions">
                         <a href="/product/<%= product._id %>" class="btn">Details</a>
+                        <form action="/delete-product" method="POST">
+                            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+                            <input type="hidden" name="productId" value="<%= product._id %>">
+                            <button type="submit" class="btn">Delete</button>
+                        </form>
                     </div>
                 </article>
                 <% }) %>

@@ -41,7 +41,7 @@ module.exports.getDashboard = async (req, res, next) => {
             });
         }
     } catch(error) {
-        error.statusCode = 500;
+        error.statusCode = error.statusCode || 500;
         throw error;
     }
 };
@@ -117,7 +117,23 @@ module.exports.postAddProduct = async (req, res, next) => {
         }
         res.status(201).redirect('/dashboard');
     } catch(error) {
-        error.statusCode = 500;
+        error.statusCode = error.statusCode || 500;
+        throw error;
+    }
+};
+
+module.exports.postDeleteProduct = async (req, res, next) => {
+    try {
+        const product = await Product.findById(req.body.productId);
+        if(!product) {
+            const error = new Error('Product not found');
+            error.statusCode = 404;
+            throw error;
+        }
+        await product.remove();
+        res.redirect('/dashboard');
+    } catch(error) {
+        error.statusCode = error.statusCode || 500;
         throw error;
     }
 };

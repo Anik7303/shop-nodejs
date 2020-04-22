@@ -10,5 +10,6 @@ router.get('/add-product', isAuth, userController.getAddProduct);
 router.get('/dashboard', isAuth, userController.getDashboard);
 
 router.post('/add-product', isAuth, userValidator.product, userController.postAddProduct);
+router.post('/delete-product', isAuth, userController.postDeleteProduct);
 
 module.exports = router;
