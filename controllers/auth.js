@@ -125,7 +125,7 @@ module.exports.postLogin = async (req, res, next) => {
         req.session.isLogged = true;
         req.session.save(error => {
             if(error) console.log(error);
-            res.status(200).redirect('/');
+            res.status(200).redirect('/dashboard');
         });
     } catch(error) {
         error.statusCode = 500;
