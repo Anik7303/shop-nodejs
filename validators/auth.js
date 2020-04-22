@@ -19,12 +19,21 @@ module.exports.signup = [
     body('password')
         .not()
         .isEmpty().withMessage('Password is required')
-        .trim()
         .isLength({ min: 8 }).withMessage('Password should be atleast 8 characters long'),
     body('confirmPassword')
-        .trim()
+        .not()
+        .isEmpty().withMessage('Please type password again in \'Confirm Password\'')
         .custom((value, { req }) => {
             if(value !== req.body.password) throw new Error('Passwords do not match');
             return true;
         })
+];
+
+module.exports.login = [
+    body('email')
+        .trim()
+        .isEmail().withMessage('Please provide a valid email'),
+    body('password')
+        .isLength({ min: 8 }).withMessage('Password should be atleast 8 character long')
+        .isString()
 ];

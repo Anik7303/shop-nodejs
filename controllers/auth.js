@@ -7,14 +7,22 @@ module.exports.getSignup = async (req, res, next) => {
     res.status(200).render('auth/signup', {
         pageTitle: 'Signup',
         path: '/signup',
-        oldInputs: null
+        oldInputs: null,
+        errors: null
+    });
+};
+
+module.exports.getLogin = async (req, res, next) => {
+    res.status(200).render('auth/login', {
+        pageTitle: 'Login',
+        path: '/login',
+        oldInputs: null,
+        errors: null
     });
 };
 
 module.exports.postSignup = async (req, res, next) => {
-    console.log(req.body);
     const errors = validationResult(req);
-    console.log(errors);
     if(!errors.isEmpty()) {
         return res.status(422).render('auth/signup', {
             pageTitle: 'Signup',
@@ -24,9 +32,10 @@ module.exports.postSignup = async (req, res, next) => {
                 email: req.body.email,
                 password: req.body.password
             },
-            error: {
-                message: errors.array().map(error => error.msg),
-                data: errors.array()
+            errors: {
+                messages: errors.array().map(error => error.msg),
+                data: errors.array(),
+                status: 422
             }
         });
     }
@@ -39,7 +48,6 @@ module.exports.postSignup = async (req, res, next) => {
             email: req.body.email,
             password: hashedPassword
         });
-        console.log(user);
 
         const updatedUser = await user.save();
         if(updatedUser) {
@@ -53,8 +61,10 @@ module.exports.postSignup = async (req, res, next) => {
                     email: req.body.email,
                     password: req.body.password
                 },
-                error: {
-                    message: 'Something went wrong, user signup failed!'
+                errors: {
+                    messages: ['Something went wrong, user signup failed!'],
+                    data: null,
+                    status: 403
                 }
             });
         }
@@ -62,5 +72,58 @@ module.exports.postSignup = async (req, res, next) => {
         error.statusCode = 500;
         throw error;
     }
+};
 
+module.exports.postLogin = async (req, res, next) => {
+    const errors = validationResult(req);
+    if(!errors.isEmpty()) {
+        return res.status(422).render('auth/login', {
+            pageTitle: 'Login',
+            path: '/login',
+            oldInputs: {
+                email: req.body.email,
+                password: req.body.password
+            },
+            errors: {
+                messages: errors.array().map(error => error.msg),
+                data: errors.array(),
+                status: 422
+            }
+        });
+    }
+    try {
+        const authErrors = { messages: [], data: [], status: 401 };
+        const user = await User.findOne({ email: req.body.email });
+        if(!user) {
+            authErrors.messages.push('Email is not associated with an account');
+            authErrors.data.push({
+                msg: 'Email is not associated with an account',
+                param: 'email'
+            });
+        } else {
+            const isEqual = await bcrypt.compare(req.body.password, user.password);
+            if(!isEqual) {
+                authErrors.messages.push('Incorrect password');
+                authErrors.data.push({
+                    msg: 'Incorrect password',
+                    param: 'password'
+                });
+            }
+        }
+        if(authErrors.messages.length > 0) {
+            return res.status(authErrors.status).render('auth/login', {
+                pageTitle: 'Login',
+                path: '/login',
+                oldInputs: {
+                    email: req.body.email,
+                    password: req.body.password
+                },
+                errors: authErrors
+            });
+        }
+        res.status(200).redirect('/');
+    } catch(error) {
+        error.statusCode = 500;
+        throw error;
+    }
 };
