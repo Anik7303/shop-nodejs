@@ -1,9 +1,11 @@
 const path = require('path');
 const fs = require('fs');
+const crypto = require('crypto')
 
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const multer = require('multer');
 const session = require('express-session');
 const MongoDBStore = require('connect-mongodb-session')(session);
 const csrf = require('csurf');
@@ -24,6 +26,28 @@ const app = express();
 //     collection: 'sessions'
 // });
 const csrfProtection = csrf();
+const fileStorage = multer.diskStorage({
+    destination: (req, file, callback) => {
+        callback(null, 'images');
+    },
+    filename: (req, file, callback) => {
+        crypto.randomBytes(20, (error, buffer) => {
+            if(error) console.log(error);
+            console.log(file.mimetype);
+            const name = buffer.toString('hex') + '.' + file.originalname.split('.').reverse()[0];
+            callback(null, name);
+        });
+    }
+});
+
+const fileFilter = (req, file, callback) => {
+    const allowedExtensions = ['image/jpg', 'image/jpeg', 'image/png'];
+    if(allowedExtensions.includes(file.mimetype)) {
+        callback(null, true);
+    } else {
+        callback(null, false);
+    }
+}
 
 app.set('view engine', 'ejs');
 app.set('views', 'views');
@@ -31,6 +55,7 @@ app.set('views', 'views');
 app.use(helmet());
 app.use(compression());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).single('image'));
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/images', express.static(path.join(__dirname, 'images')));
 // app.use(session({
@@ -41,7 +66,7 @@ app.use('/images', express.static(path.join(__dirname, 'images')));
 // }));
 // app.use(csrfProtection);
 
-// app.use(userRoutes);
+app.use(userRoutes);
 app.use(shopRoutes);
 app.use(authRoutes);
 // app.use(errorRoutes);

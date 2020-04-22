@@ -1,9 +1,17 @@
     <%- include('../includes/head.ejs') %>
     <link rel="stylesheet" href="/css/product.css">
+    <link rel="stylesheet" href="/css/message.css">
     </head>
 <body>
     <%- include('../includes/navigation-old.ejs') %>
     <main>
+        <% if(errors && errors.messages ) { %>
+            <div class="user-message user-message--error">
+                <% errors.messages.forEach(message => { %>
+                    <div><%= message %></div>
+                <% }) %>
+            </div>
+            <% } %>
         <% if(totalProducts > 0) { %>
         <div class="grid">
             <% products.forEach(product => { %>

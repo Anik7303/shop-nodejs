@@ -9,14 +9,16 @@ module.exports.getProducts = async (req, res, next) => {
                 pageTitle: 'Products',
                 path: '/products',
                 products: products,
-                totalProducts: totalProducts
+                totalProducts: totalProducts,
+                errors: null
             });
         } else {
             res.status(200).render('shop/product-list', {
                 pageTitle: 'Products',
                 path: '/products',
                 products: [],
-                totalProducts: 0
+                totalProducts: 0,
+                errors: null
             });
         }
     } catch(error) {

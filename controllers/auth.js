@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 
 const User = require('../models/user');
 
-module.exports.getSignup = async (req, res, next) => {
+module.exports.getSignup = (req, res, next) => {
     res.status(200).render('auth/signup', {
         pageTitle: 'Signup',
         path: '/signup',
@@ -12,7 +12,7 @@ module.exports.getSignup = async (req, res, next) => {
     });
 };
 
-module.exports.getLogin = async (req, res, next) => {
+module.exports.getLogin = (req, res, next) => {
     res.status(200).render('auth/login', {
         pageTitle: 'Login',
         path: '/login',

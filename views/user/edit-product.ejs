@@ -1,0 +1,60 @@
+    <%- include('../includes/head.ejs') %>
+    <link rel="stylesheet" href="/css/forms.css">
+    <link rel="stylesheet" href="/css/product.css">
+    </head>
+<body>
+    <%- include('../includes/navigation-old.ejs') %>
+    <main>
+        <% if(errors && errors.messages.length > 0) { %>
+        <div class="user-message user-message--error">
+            <% errors.messages.forEach(message => { %>
+                <div><%= message %></div>
+            <% }) %>
+        </div>
+        <% } %>
+        <form action="/add-product" class="product-form" method="POST" enctype="multipart/form-data" novalidate>
+            <div class="form-control">
+                <label for="title">Title</label>
+                <input
+                    class="<%= errors && errors.data && errors.data.find(item => item.param === 'title') ? 'invalid' : '' %>"
+                    type="text"
+                    name="title"
+                    id="title"
+                    value="<%= editing || (oldInputs && oldInputs.title) ? oldInputs.title : '' %>"
+                    placeholder="Title (between 4 to 30 characters)"
+                    autocomplete="off"
+                    autofocus>
+            </div>
+            <div class="form-control">
+                <label for="image">Image</label>
+                <input
+                    class="<%= errors && errors.data && errors.data.find(item => item.param === 'image') ? 'invalid' : '' %>"
+                    type="file"
+                    name="image"
+                    id="image">
+            </div>
+            <div class="form-control">
+                <label for="price">Price</label>
+                <input
+                    class="<%= errors && errors.data && errors.data.find(item => item.param === 'price') ? 'invalid' : '' %>"
+                    type="number"
+                    name="price"
+                    id="price"
+                    step="0.5"
+                    value="<%= editing || (oldInputs && oldInputs.price) ? oldInputs.price : '' %>"
+                    placeholder="Price (in dollars)"
+                    autocomplete="off">
+            </div>
+            <div class="form-control">
+                <label for="description">Description</label>
+                <textarea
+                    class="<%= errors && errors.data && errors.data.find(item => item.param === 'description') ? 'invalid' : '' %>"
+                    name="description"
+                    id="description"
+                    rows="5"
+                    placeholder="A brief description of the product"><%= editing || (oldInputs && oldInputs.description) ? oldInputs.description : '' %></textarea>
+            </div>
+            <button type="submit" class="btn">Add</button>
+        </form>
+    </main>
+<%- include('../includes/end.ejs') %>
